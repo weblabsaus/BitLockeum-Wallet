@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cryptocurrency Wallet</title>
+</head>
+<body>
+  <h1>Cryptocurrency Wallet</h1>
+  
+  <h2>Create Wallet</h2>
+  <form id="walletForm">
+    <label for="email">Enter your email address:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="balance">Starting Balance (Optional):</label>
+    <input type="number" id="balance" name="balance" min="0">
+    <button type="button" onclick="createWallet()">Create Wallet</button>
+  </form>
+
+  <h3>Your Wallet Address: <span id="walletAddress"></span></h3>
+
+  <h2>Check Balance</h2>
+  <form id="balanceForm">
+    <label for="walletAddressInput">Enter your wallet address:</label>
+    <input type="text" id="walletAddressInput" name="walletAddressInput" required>
+    <button type="button" onclick="checkBalance()">Check Balance</button>
+  </form>
+
+  <h3>Your Balance: <span id="balanceOutput"></span></h3>
+
+  <h2>Transaction History</h2>
+  <button onclick="showTransactionHistory()">View Transactions</button>
+
+  <div id="transactionHistory"></div>
+
+  <script>
+    function createWallet() {
+      const email = document.getElementById('email').value;
+      const balance = document.getElementById('balance').value || 0;
+      
+      const formUrl = 'https://docs.google.com/forms/d/e/[FORM_ID]/formResponse?usp=pp_url&entry.1234567890=' + email + '&entry.0987654321=' + balance;
+      
+      fetch(formUrl, { method: 'POST' })
+        .then(() => {
+          alert('Wallet created successfully!');
+        })
+        .catch(error => {
+          console.error('Error creating wallet:', error);
+        });
+    }
+
+    function checkBalance() {
+      const walletAddress = document.getElementById('walletAddressInput').value;
+      const url = 'https://docs.google.com/spreadsheets/d/[SHEET_ID]/gviz/tq?tqx=out:json&sheet=Wallets&tq=SELECT%20*%20WHERE%20A%3D%27' + walletAddress + '%27';
+      
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const json = JSON.parse(data.substring(47).slice(0, -2));
+          const balance = json.table.rows[0].c[3].v;
+          document.getElementById('balanceOutput').innerText = balance;
+        });
+    }
+  </script>
+</body>
+</html>
